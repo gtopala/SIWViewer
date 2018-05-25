@@ -103,7 +103,7 @@ namespace SIWViewer
             this.linkLabel1.Size = new System.Drawing.Size(92, 13);
             this.linkLabel1.TabIndex = 2;
             this.linkLabel1.TabStop = true;
-            this.linkLabel1.Text = "www.gtopala.com";
+            this.linkLabel1.Text = "https://www.gtopala.com";
             this.linkLabel1.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // label2
@@ -113,7 +113,7 @@ namespace SIWViewer
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(342, 13);
             this.label2.TabIndex = 1;
-            this.label2.Text = "This is a free version for PERSONAL usage, NOT for comercial usage !";
+            this.label2.Text = "This is a free version for personal and comercial usage !";
             // 
             // label1
             // 
@@ -122,7 +122,7 @@ namespace SIWViewer
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(241, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "SIW Viewer, version 2.0 (build 006) - Free Version";
+            this.label1.Text = "SIW Viewer, version 2.0 (build 007) - Free Version";
             // 
             // AboutDialog
             // 
