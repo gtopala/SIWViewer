@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-using Aga.Controls.Tree;
-using System.IO;
-using System.Drawing;
-using System.ComponentModel;
-using System.Threading;
+﻿using Aga.Controls.Tree;
+using System;
 using System.Collections;
-using System.Xml;
 
 namespace SIWViewer
 {
     public class DetailsTreeModel : ITreeModel
     {
-        DetailTreeNode node_;
+        private readonly DetailTreeNode node_;
 
         public DetailsTreeModel(DetailTreeNode node)
         {
@@ -36,6 +28,7 @@ namespace SIWViewer
             DetailTreeNode node = treePath.LastNode as DetailTreeNode;
             return node.isLeaf();
         }
+#pragma warning disable CS0067
 
         public event EventHandler<TreeModelEventArgs> NodesChanged;
         public event EventHandler<TreeModelEventArgs> NodesInserted;

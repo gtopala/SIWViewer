@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Topala Software Solutions")]
 [assembly: AssemblyProduct("SIWViewer")]
-[assembly: AssemblyCopyright("Copyright ©  2007 - 2011 Topala Software Solutions")]
+[assembly: AssemblyCopyright("Copyright ©  2007 - 2023 Topala Software Solutions")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

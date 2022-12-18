@@ -122,7 +122,7 @@ namespace SIWViewer
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(241, 13);
             this.label1.TabIndex = 0;
-            this.label1.Text = "SIW Viewer, version 2.0 (build 007) - Free Version";
+            this.label1.Text = "SIW Viewer, version 2.0 (build 008) - Free Version";
             // 
             // AboutDialog
             // 

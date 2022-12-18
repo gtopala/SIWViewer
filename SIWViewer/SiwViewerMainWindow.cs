@@ -1,13 +1,10 @@
+using Aga.Controls.Tree.NodeControls;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-using System.Xml.XPath;
-using Aga.Controls.Tree.NodeControls;
 
 namespace SIWViewer
 {
@@ -23,8 +20,8 @@ namespace SIWViewer
             treeView.AfterSelect += new TreeViewEventHandler(treeView1_AfterSelect);
             // some initializations...
             initControls();
-//            System.Environment.GetCommandLineArgs();
-            String[] arguments = Environment.GetCommandLineArgs();
+            //            System.Environment.GetCommandLineArgs();
+            string[] arguments = Environment.GetCommandLineArgs();
             if (arguments.GetLength(0) == 2)
             {
                 processFile(arguments[1]);
@@ -57,18 +54,20 @@ namespace SIWViewer
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             Console.WriteLine("OPEN what ...");
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.FilterIndex = 1;
-            // dlg.Filter = "SIW Files (*.xml) | *.xml|SIW Files (*.csv) | *.csv";
-            dlg.Filter = "SIW Files (*.xml) | *.xml";
+            OpenFileDialog dlg = new OpenFileDialog
+            {
+                FilterIndex = 1,
+                // dlg.Filter = "SIW Files (*.xml) | *.xml|SIW Files (*.csv) | *.csv";
+                Filter = "SIW Files (*.xml) | *.xml"
+            };
             if (DialogResult.OK == dlg.ShowDialog(this))
             {
-                String fileName = dlg.FileName;
+                string fileName = dlg.FileName;
                 processFile(fileName);
             }
         }
 
-        private void processFile(String fileName)
+        private void processFile(string fileName)
         {
             // implement the open...
             try
@@ -84,11 +83,12 @@ namespace SIWViewer
                     MessageBox.Show(this, "The file '" + fileName + "' is not a SIW 'report' file !", "SIW Viewer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                System.Globalization.NumberFormatInfo provider = new System.Globalization.NumberFormatInfo();
-
-                provider.NumberDecimalSeparator = ".";
-                provider.NumberGroupSeparator = ",";
-                provider.NumberGroupSizes = new int[] { 3 };
+                System.Globalization.NumberFormatInfo provider = new System.Globalization.NumberFormatInfo
+                {
+                    NumberDecimalSeparator = ".",
+                    NumberGroupSeparator = ",",
+                    NumberGroupSizes = new int[] { 3 }
+                };
 
                 float ver = System.Convert.ToSingle(getAttribute(dom.DocumentElement, "xml_version"), provider);
                 if (ver < 1.2f)
@@ -96,11 +96,11 @@ namespace SIWViewer
                     MessageBox.Show(this, "Only the versions >= 1.2 are supported, not this one: " + ver + " !", "SIW Viewer Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
-                this.Text = "SIW Viewer [ " + fileName + "] - \\\\" + getAttribute(dom.DocumentElement, "computer_name");
+                Text = "SIW Viewer [ " + fileName + "] - \\\\" + getAttribute(dom.DocumentElement, "computer_name");
                 // SECTION 2. Initialize the TreeView control.
                 treeView.Nodes.Clear();
                 // add the root...
-                String name = getAttribute(dom.DocumentElement, "Title");
+                string name = getAttribute(dom.DocumentElement, "Title");
                 int type = getNodeType(dom.DocumentElement);
                 treeView.Nodes.Add(new MyTreeNode(name, type));
                 MyTreeNode tNode = (MyTreeNode)treeView.Nodes[0];
@@ -112,6 +112,7 @@ namespace SIWViewer
                 {
                     tNode.Nodes[2].ExpandAll();
                 }
+#pragma warning disable CS0168  
                 catch (ArgumentOutOfRangeException ex)
                 {
                     //MessageBox.Show(ex.Message);
@@ -149,7 +150,7 @@ namespace SIWViewer
 
         private int getNodeType(XmlNode node)
         {
-            String sType = getAttribute(node, "__type__");
+            string sType = getAttribute(node, "__type__");
             int type = sType == null ? 1 : System.Convert.ToInt32(sType);
             return type;
         }
@@ -167,14 +168,14 @@ namespace SIWViewer
             treeViewDetails.Hide();
         }
 
-        private XmlNode evalXPath(XmlNode parent, String xp)
+        private XmlNode evalXPath(XmlNode parent, string xp)
         {
             XmlNode result = parent.SelectSingleNode(xp);
             Console.Out.WriteLine("Found node: " + result + ", xp: " + xp);
             return result;
         }
 
-        private String getXPath(XmlNode xnode)
+        private string getXPath(XmlNode xnode)
         {
             if (xnode == null)
             {
@@ -184,8 +185,8 @@ namespace SIWViewer
             {
                 return "/";
             }
-            String xp = xnode.LocalName;
-            Boolean first = true;
+            string xp = xnode.LocalName;
+            bool first = true;
             foreach (XmlAttribute a in xnode.Attributes)
             {
                 if (first)
@@ -203,7 +204,7 @@ namespace SIWViewer
             {
                 xp += "]";
             }
-            String x = getXPath(xnode.ParentNode);
+            string x = getXPath(xnode.ParentNode);
             if (x != null)
             {
                 xp = x + "/" + xp;
@@ -211,9 +212,9 @@ namespace SIWViewer
             return xp;
         }
 
-        private static String encodeXml(String str)
+        private static string encodeXml(string str)
         {
-            String encStr = "";
+            string encStr = "";
             char[] array = str.ToCharArray();
             for (int i = 0; i < array.Length; i++)
             {
@@ -232,7 +233,7 @@ namespace SIWViewer
 
         private void addNextLevelNodes(MyTreeNode tParentNode)
         {
-            String xp = tParentNode.Tag.ToString();
+            string xp = tParentNode.Tag.ToString();
             if (xp == null)
             {
                 return;
@@ -252,8 +253,10 @@ namespace SIWViewer
                     XmlNode xNode = xParentNode.ChildNodes[i];
                     if (xNode.NodeType == XmlNodeType.Element)
                     {
-                        MyTreeNode tnode = new MyTreeNode(getAttribute(xNode, "Title"), getNodeType(xNode));
-                        tnode.Tag = getXPath(xNode);
+                        MyTreeNode tnode = new MyTreeNode(getAttribute(xNode, "Title"), getNodeType(xNode))
+                        {
+                            Tag = getXPath(xNode)
+                        };
                         tParentNode.Nodes.Add(tnode);
 
                         MyTreeNode fakeNode = new MyTreeNode("loading...", 1);
@@ -276,7 +279,7 @@ namespace SIWViewer
         private void treeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
             MyTreeNode tNode = (MyTreeNode)e.Node;
-            String xp = tNode.Tag.ToString();
+            string xp = tNode.Tag.ToString();
             XmlNode xmlNode = evalXPath(dom, xp);
 
             dataGridView1.Columns.Clear();
@@ -334,11 +337,13 @@ namespace SIWViewer
                 XmlNode a = pageElem.Attributes.Item(i);
                 if (a.Name.StartsWith("H"))
                 {
-                    Aga.Controls.Tree.TreeColumn tc = new Aga.Controls.Tree.TreeColumn();
-                    tc.Header = a.Value;
+                    Aga.Controls.Tree.TreeColumn tc = new Aga.Controls.Tree.TreeColumn
+                    {
+                        Header = a.Value
+                    };
 
                     // compute the width of the max value.
-                    String maxValue = getMaxValue(pageElem, a.Value, "");
+                    string maxValue = getMaxValue(pageElem, a.Value, "");
                     SizeF width = treeViewDetails.CreateGraphics().MeasureString(maxValue, treeViewDetails.Font);
                     tc.Width = 20 + width.ToSize().Width + (cols == 0 ? 50 : 0);
 
@@ -361,7 +366,7 @@ namespace SIWViewer
             return new DetailsTreeModel(new DetailTreeNode(pageElem));
         }
 
-        private String getMaxValue(XmlNode xNode, String attrNm, String maxValue)
+        private string getMaxValue(XmlNode xNode, string attrNm, string maxValue)
         {
             if (xNode is XmlElement)
             {
@@ -370,7 +375,7 @@ namespace SIWViewer
                 XmlNode attr = xNode.Attributes.GetNamedItem(attrNm);
                 if (attr != null)
                 {
-                    String value = attr.Value.Replace('\n', ' ');
+                    string value = attr.Value.Replace('\n', ' ');
                     if (value.Length > maxValue.Length)
                     {
                         maxValue = value;
@@ -378,7 +383,7 @@ namespace SIWViewer
                 }
                 foreach (XmlNode kid in xNode.ChildNodes)
                 {
-                    String max = getMaxValue(kid, attrNm, maxValue);
+                    string max = getMaxValue(kid, attrNm, maxValue);
                     if (max.Length > maxValue.Length)
                     {
                         maxValue = max;
@@ -392,7 +397,7 @@ namespace SIWViewer
         {
             List<XmlNode> kids = getChildElements(xmlNode);
             XmlNode itemEl = null;
-            for (int i = kids.Count; --i >= 0; )
+            for (int i = kids.Count; --i >= 0;)
             {
                 if (itemEl == null)
                 {
@@ -409,7 +414,7 @@ namespace SIWViewer
             {
                 for (int i = 0; i < itemEl.Attributes.Count; i++)
                 {
-                    String attr_nm = itemEl.Attributes.Item(i).Name;
+                    string attr_nm = itemEl.Attributes.Item(i).Name;
                     dataGridView1.Columns.Add(attr_nm, getAttribute(xmlNode, "H" + (i + 1)));
                 }
             }
@@ -417,7 +422,7 @@ namespace SIWViewer
             {
                 for (int i = 1; i < 50; i++)
                 {
-                    String colNm = getAttribute(xmlNode, "H" + i);
+                    string colNm = getAttribute(xmlNode, "H" + i);
                     if (colNm == null)
                     {
                         break;
@@ -455,7 +460,7 @@ namespace SIWViewer
             if (xParentNode != null && xParentNode.HasChildNodes)
             {
                 XmlNodeList nodeList = xParentNode.ChildNodes;
-                for (int i = nodeList.Count; --i >= 0; )
+                for (int i = nodeList.Count; --i >= 0;)
                 {
                     XmlNode xNode = nodeList.Item(i);
                     if (xNode.NodeType == XmlNodeType.Element)
@@ -467,9 +472,9 @@ namespace SIWViewer
             return kids;
         }
 
-        public static String getAttribute(XmlNode xmlNode, String attrName)
+        public static string getAttribute(XmlNode xmlNode, string attrName)
         {
-            for (int i = xmlNode.Attributes.Count; --i >= 0; )
+            for (int i = xmlNode.Attributes.Count; --i >= 0;)
             {
                 if (xmlNode.Attributes.Item(i).Name.Equals(attrName))
                 {
@@ -479,7 +484,7 @@ namespace SIWViewer
             return null;
         }
 
-        public static String getFirstAttribute(XmlNode xmlNode)
+        public static string getFirstAttribute(XmlNode xmlNode)
         {
             if (xmlNode.Attributes.Count > 0)
             {
@@ -507,7 +512,7 @@ namespace SIWViewer
                     xNode = inXmlNode.ChildNodes[i];
                     if (xNode.NodeType == XmlNodeType.Element)
                     {
-                        String name = getAttribute(xNode, "Title");
+                        string name = getAttribute(xNode, "Title");
                         inTreeNode.Nodes.Add(new MyTreeNode(name, getNodeType(xNode)));
                         tNode = (MyTreeNode)inTreeNode.Nodes[i];
                         AddNode(xNode, tNode);
@@ -522,12 +527,12 @@ namespace SIWViewer
 
         private void SiwViewerMainWindow_MouseEnter(object sender, EventArgs e)
         {
-            this.toolStripStatusLabel1.Text = sender.ToString();
+            toolStripStatusLabel1.Text = sender.ToString();
         }
 
         private void SiwViewerMainWindow_MouseLeave(object sender, EventArgs e)
         {
-            this.toolStripStatusLabel1.Text = "";
+            toolStripStatusLabel1.Text = "";
         }
 
         private void dataGridView1_SelectionChanged(object sender, EventArgs e)
@@ -541,12 +546,12 @@ namespace SIWViewer
             {
                 return;
             }
-            String attrs = "";
+            string attrs = "";
             for (int i = 0; i < dataGridView1.Columns.Count; i++)
             {
                 if (dataGridView1.Rows[selRow].Cells[i].Value != null)
                 {
-                    String val = dataGridView1.Rows[selRow].Cells[i].Value.ToString();
+                    string val = dataGridView1.Rows[selRow].Cells[i].Value.ToString();
                     if (attrs.Length > 0)
                     {
                         attrs += " and ";
@@ -555,7 +560,7 @@ namespace SIWViewer
                 }
             }
 
-            String xp = "//item[" + attrs + "]";
+            string xp = "//item[" + attrs + "]";
             Console.Out.WriteLine("table selection row = " + selRow + " xp = " + xp);
 
             XmlNode itemXml = evalXPath(dom, xp);
@@ -575,7 +580,7 @@ namespace SIWViewer
                 XmlNode xmlNode = kids[0];
                 kids = getChildElements(xmlNode);
                 XmlNode itemEl = null;
-                for (int i = kids.Count; --i >= 0; )
+                for (int i = kids.Count; --i >= 0;)
                 {
                     if (itemEl == null)
                     {
@@ -592,7 +597,7 @@ namespace SIWViewer
                 {
                     for (int i = 0; i < itemEl.Attributes.Count; i++)
                     {
-                        String attr_nm = itemEl.Attributes.Item(i).Name;
+                        string attr_nm = itemEl.Attributes.Item(i).Name;
                         dataGridView2.Columns.Add(attr_nm, getAttribute(xmlNode, "H" + (i + 1)));
                     }
                 }
@@ -600,7 +605,7 @@ namespace SIWViewer
                 {
                     for (int i = 1; i < 50; i++)
                     {
-                        String colNm = getAttribute(xmlNode, "H" + i);
+                        string colNm = getAttribute(xmlNode, "H" + i);
                         if (colNm == null)
                         {
                             break;
@@ -667,7 +672,7 @@ namespace SIWViewer
 
     }
 
-    class MyTreeNode : TreeNode
+    internal class MyTreeNode : TreeNode
     {
         //
         // Summary:
@@ -679,10 +684,10 @@ namespace SIWViewer
         [DefaultValue(1)]
         public int TypeNode { get; set; }
 
-        public MyTreeNode(String name, int type)
+        public MyTreeNode(string name, int type)
             : base(name)
         {
-            this.TypeNode = type;
+            TypeNode = type;
         }
     }
 
